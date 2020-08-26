@@ -31,7 +31,7 @@ type ApkInfo struct {
 	PackageName  string `json:"packageName"`
 	MainActivity string `json:"mainActivity"`
 	Version      struct {
-		Code int    `json:"code"`
+		Code int32  `json:"code"`
 		Name string `json:"name"`
 	} `json:"version"`
 }
@@ -169,8 +169,8 @@ func (s *HTTPStaticServer) hDelete(w http.ResponseWriter, req *http.Request) {
 	err := os.Remove(filepath.Join(s.Root, path))
 	if err != nil {
 		pathErr, ok := err.(*os.PathError)
-		if ok{
-			http.Error(w, pathErr.Op + " " + path + ": " + pathErr.Err.Error(), 500)
+		if ok {
+			http.Error(w, pathErr.Op+" "+path+": "+pathErr.Err.Error(), 500)
 		} else {
 			http.Error(w, err.Error(), 500)
 		}
@@ -288,8 +288,8 @@ func parseApkInfo(path string) (ai *ApkInfo) {
 	ai = &ApkInfo{}
 	ai.MainActivity, _ = apkf.MainActivity()
 	ai.PackageName = apkf.PackageName()
-	ai.Version.Code = apkf.Manifest().VersionCode
-	ai.Version.Name = apkf.Manifest().VersionName
+	ai.Version.Code, _ = apkf.Manifest().VersionCode.Int32()
+	ai.Version.Name, _ = apkf.Manifest().VersionName.String()
 	return
 }
 
